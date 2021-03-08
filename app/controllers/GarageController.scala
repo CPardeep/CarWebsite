@@ -12,6 +12,9 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class GarageController @Inject()(cc: ControllerComponents, myGarageCollection: MyGarageCollection, implicit val ec: ExecutionContext) extends AbstractController(cc) with play.api.i18n.I18nSupport {
 
+  def index() = Action { implicit request: Request[AnyContent] =>
+    Ok(views.html.index("It works"))
+  }
   def displayCarForm = Action { implicit request =>
     Ok(views.html.addCarToGarage(CarForm.form))
   }
