@@ -21,39 +21,30 @@ class ApplicationUsingJsonReadersWriters @Inject() (
 
   //Maps from BSON collection to JSON collection as a future
   def collection: Future[JSONCollection] = database.map(
-    _.collection[JSONCollection]("persons"))
+    _.collection[JSONCollection]("Cars"))
   import models._
   import models.JsonFormats._
 
   def create = Action.async {
-    val user = User(29, "chetan", "Smith", List(
-      Feed("Slashdot news", "http://slashdot.org/slashdot.rdf")))
-
-    // insert the user
-    val futureResult = collection.flatMap(_.insert.one(user))
-
-    // when the insert is performed, send a OK 200 result
-    futureResult.map(_ => Ok)
+    val user = Car("Bmw", "M3", "2004", "EA04MXD")
+    val futureResult = collection.flatMap(_.insert.one(user)) // insert the user
+    futureResult.map(_ => Ok) // when the insert is performed, send a OK 200 result
   }
 
   def findByName(lastName: String) = Action.async {
     // let's do our query
-    val cursor: Future[Cursor[User]] = collection.map {
-      // find all people with name `name`
-      _.find(Json.obj("lastName" -> lastName)).
-        // sort them by creation date
-        sort(Json.obj("created" -> -1)).
-        // perform the query and get a cursor of JsObject
-        cursor[User]()
+    val cursor: Future[Cursor[Car]] = collection.map { // find all people with name `name`
+      _.find(Json.obj("lastName" -> lastName)). // sort them by creation date
+        sort(Json.obj("created" -> -1)). // perform the query and get a cursor of JsObject
+        cursor[Car]()
     }
-
     // gather all the JsObjects in a list
-    val futureUsersList: Future[List[User]] =
-      cursor.flatMap(_.collect[List](-1, Cursor.FailOnError[List[User]]()))
-
+    val futureUsersList: Future[List[Car]] =
+      cursor.flatMap(_.collect[List](-1, Cursor.FailOnError[List[Car]]()))
     // everything's ok! Let's reply with the array
     futureUsersList.map { persons =>
       Ok(persons.toString)
     }
   }
+
 }

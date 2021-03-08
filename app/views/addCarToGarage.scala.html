@@ -1,0 +1,13 @@
+@import helper._
+@(carForm: Form[Car])(implicit messages: MessagesProvider)
+
+@main("Welcome to Play") {
+    @form(action = routes.GarageController.addCar()){
+        @inputText(carForm("brand"))
+        @inputText(carForm("model"))
+        @inputText(carForm("year"))
+        @inputText(carForm("registration"))
+<input type="submit" value="Submit">
+}
+
+}
